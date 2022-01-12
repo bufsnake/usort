@@ -53,20 +53,20 @@ func main() {
 	hostpath_schemas := make(map[string][]string)
 	hostpaths := make([]string, 0)
 	for urlstr, _ := range probes {
-		var schema, hostpath = "", ""
-		schema, hostpath, err = urlparse(urlstr)
+		var schema = ""
+		schema, err = urlparse(urlstr)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "%s %s", urlstr, err)
 			continue
 		}
-		if hostpath == "" {
+		if schema == "" {
 			continue
 		}
-		if _, ok := hostpath_schemas[hostpath]; !ok {
-			hostpath_schemas[hostpath] = make([]string, 0)
-			hostpaths = append(hostpaths, hostpath)
+		if _, ok := hostpath_schemas[strings.TrimLeft(urlstr, schema)]; !ok {
+			hostpath_schemas[strings.TrimLeft(urlstr, schema)] = make([]string, 0)
+			hostpaths = append(hostpaths, strings.TrimLeft(urlstr, schema))
 		}
-		hostpath_schemas[hostpath] = append(hostpath_schemas[hostpath], schema)
+		hostpath_schemas[strings.TrimLeft(urlstr, schema)] = append(hostpath_schemas[strings.TrimLeft(urlstr, schema)], schema)
 	}
 	sort.Strings(hostpaths)
 	for i := 0; i < len(hostpaths); i++ {
@@ -77,16 +77,12 @@ func main() {
 	}
 }
 
-func urlparse(urlstr string) (schema string, hostpath string, err error) {
+func urlparse(urlstr string) (schema string, err error) {
 	var parse *url.URL
 	parse, err = url.Parse(urlstr)
 	if err != nil {
 		return
 	}
 	schema = parse.Scheme
-	hostpath = parse.Host + parse.Path
-	if parse.RawQuery != "" {
-		hostpath += "?" + parse.RawQuery
-	}
 	return
 }
