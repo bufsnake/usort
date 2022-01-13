@@ -72,7 +72,7 @@ func main() {
 	for i := 0; i < len(hostpaths); i++ {
 		sort.Strings(hostpath_schemas[hostpaths[i]])
 		for j := 0; j < len(hostpath_schemas[hostpaths[i]]); j++ {
-			fmt.Println(hostpath_schemas[hostpaths[i]][j] + "://" + hostpaths[i])
+			fmt.Println(hostpath_schemas[hostpaths[i]][j] + hostpaths[i])
 		}
 	}
 }
